@@ -47,23 +47,26 @@ import java.lang.IllegalStateException
 class MovieRepositoryImpl(
     private val movieApiService: MovieApiService,
     private val movieDao: MovieDao,
-    private val contextProvider : CoroutineContextProvider
+    private val contextProvider: CoroutineContextProvider
 ) : MovieRepository {
 
     override suspend fun getMovies(): List<Movie> =
-        withContext(contextProvider.context()){
-            logCoroutine("getMovies",coroutineContext)
-            throw IllegalStateException("Test error")
-        val cachedMoviesDeferred = async{
-            logCoroutine("getSavedMovies",coroutineContext)
-            movieDao.getSavedMovies() }
-        val resultDeferred = async{
-            logCoroutine("execute",coroutineContext)
-            movieApiService.getMovies(API_KEY).execute() }
+        withContext(contextProvider.context()) {
+            logCoroutine("getMovies", coroutineContext)
 
-        val cachedMovies = cachedMoviesDeferred.await()
-        val apiMovies = resultDeferred.await().body()?.movies
+            val cachedMoviesDeferred = async {
+                logCoroutine("getSavedMovies", coroutineContext)
+                movieDao.getSavedMovies()
+            }
 
-        apiMovies ?: cachedMovies
-    }
+            val cachedMovies = cachedMoviesDeferred.await()
+            val apiMovies = try {
+                movieApiService.getMovies(API_KEY).movies
+            }catch (error:Throwable){
+                null
+            }
+
+
+            apiMovies ?: cachedMovies
+        }
 }

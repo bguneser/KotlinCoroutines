@@ -40,5 +40,5 @@ import retrofit2.http.Query
 interface MovieApiService {
 
   @GET("/3/movie/popular")
-  fun getMovies(@Query("api_key") apiKey: String): Call<MoviesResponse>
+  suspend fun getMovies(@Query("api_key") apiKey: String): MoviesResponse
 }
