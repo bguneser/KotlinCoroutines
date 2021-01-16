@@ -50,23 +50,21 @@ class MovieRepositoryImpl(
     private val contextProvider: CoroutineContextProvider
 ) : MovieRepository {
 
-    override suspend fun getMovies(): List<Movie> =
-        withContext(contextProvider.context()) {
-            logCoroutine("getMovies", coroutineContext)
+    override suspend fun getMovies(): List<Movie> {
 
-            val cachedMoviesDeferred = async {
-                logCoroutine("getSavedMovies", coroutineContext)
-                movieDao.getSavedMovies()
-            }
+    val cachedMovies = movieDao.getSavedMovies()
+    val apiMovies = try {
+        movieApiService.getMovies(API_KEY).movies
+    } catch (error: Throwable) {
+        null
+    }
 
-            val cachedMovies = cachedMoviesDeferred.await()
-            val apiMovies = try {
-                movieApiService.getMovies(API_KEY).movies
-            }catch (error:Throwable){
-                null
-            }
+    if(apiMovies !=null) {
+        movieDao.saveMovies(apiMovies)
+    }
 
+    return  apiMovies ?: cachedMovies
 
-            apiMovies ?: cachedMovies
-        }
+}
+
 }
