@@ -36,10 +36,11 @@ import com.raywenderlich.kotlin.coroutines.R
 import com.raywenderlich.kotlin.coroutines.data.model.Movie
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class MoviesActivity : AppCompatActivity(), MoviesView {
 
-  private val presenter by inject<MoviesPresenter>()
+  private val presenter : MoviesPresenter by viewModel<MoviesPresenterImpl>()
   private val movieAdapter by lazy { MovieAdapter() }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,11 +65,6 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
   override fun showError(throwable: Throwable) {
     swipeToRefresh.isRefreshing = false
     // handle error
-  }
-
-  override fun onStop() {
-    presenter.stop()
-    super.onStop()
   }
 
   override fun onStart() {

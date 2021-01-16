@@ -35,5 +35,4 @@ interface MoviesPresenter {
 
   fun getData()
 
-  fun stop()
 }

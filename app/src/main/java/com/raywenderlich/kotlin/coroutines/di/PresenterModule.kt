@@ -31,6 +31,7 @@ package com.raywenderlich.kotlin.coroutines.di
 
 import com.raywenderlich.kotlin.coroutines.ui.movies.MoviesPresenter
 import com.raywenderlich.kotlin.coroutines.ui.movies.MoviesPresenterImpl
+import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 /**
@@ -38,5 +39,5 @@ import org.koin.dsl.module
  */
 
 fun presenterModule() = module {
-  single { MoviesPresenterImpl(get()) as MoviesPresenter }
+  viewModel { MoviesPresenterImpl(get())  }
 }
